@@ -1,0 +1,17 @@
+1. make a list of all the processes (PID)
+    a. find a way to get all the directory names from inside a directory
+    b. names that are solely number in /proc are processes
+2. (RES)
+    a. this is found in statm[1]
+3. (USS)
+    a. might be possible with statm
+        i. subtract nmber of shared pages (statm[2]) from rss (statm[1]) 
+4. (SHR)
+    a. probably statm[2]. not entirely sure
+5. (PSS)
+    a. CAN NOT BE DONE WITH STATM
+    b. will be very slow
+6. (SWAP)
+    a. CAN NOT BE DONE WITH STATM
+7. (CMD)
+    a. /proc/PID/cmdline maybe. Not sure if we need to parse out args to the command
