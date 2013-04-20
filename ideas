@@ -18,3 +18,17 @@
     a. CAN NOT BE DONE WITH STATM
 7. (CMD)
     a. /proc/PID/cmdline maybe. Not sure if we need to parse out args to the command
+
+
+Notes:
+- Total memory size is found in meminfo
+
+- the following python will return a python list of the pages in your machine:
+kpf = open('/proc/kpagecount', 'rb')
+cnts = kpf.read()
+vals = [ cnts[i:i+8] for i in range(0, len(cnts), 8)]
+// OR vals = [ cnts[i:i+8] for i in range(0, NUMPAGES, 8)]
+// where NUMPAGES = (total amount of memory)/(page size)
+pgcnts = [struct.unpack('q',v)[0] for v in vals ]
+
+- "getconf PAGESIZE" gets you the page size. there is probably a python func for this
