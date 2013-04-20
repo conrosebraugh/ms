@@ -11,6 +11,9 @@
 5. (PSS)
     a. CAN NOT BE DONE WITH STATM
     b. will be very slow
+    c. dictionary of pages
+        i. key is page number
+        ii. value is list of processes page
 6. (SWAP)
     a. CAN NOT BE DONE WITH STATM
 7. (CMD)
