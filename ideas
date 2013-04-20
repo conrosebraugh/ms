@@ -31,4 +31,7 @@ vals = [ cnts[i:i+8] for i in range(0, len(cnts), 8)]
 // where NUMPAGES = (total amount of memory)/(page size)
 pgcnts = [struct.unpack('q',v)[0] for v in vals ]
 
-- "getconf PAGESIZE" gets you the page size. there is probably a python func for this
+- to get the page size in python:
+import resource
+resource.getpagesize()
+#you have no idea how fucking long it took me to find that
