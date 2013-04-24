@@ -35,3 +35,9 @@ pgcnts = [struct.unpack('q',v)[0] for v in vals ]
 import resource
 resource.getpagesize()
 #you have no idea how fucking long it took me to find that
+
+- os.getcwd() - store this
+
+- change directory to "/proc"
+
+- glob.glob("/proc/[0-9]*")
