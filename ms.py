@@ -43,3 +43,24 @@ process_dict['0']['RES'] = 'RES'
 process_dict['0']['SHR'] = 'SHR'
 process_dict['0']['CMD'] = 'CMD'
 
+
+for i in list_of_pids:
+	process_dict[i] = {}
+	process_dict[i]['PID'] = i
+	os.chdir('/proc/'+i)
+	f = open('statm', 'r')
+	process_dict[i]['RES'] = f.readline().split()[1]
+	process_dict[i]['USS'] = repr(int(l[2]) - int(l[1]))
+	process_dict[i]['SHR'] = l[2]
+	f.close()
+	f = open('cmdline', 'r')
+	process_dict[i]['CMD'] = f.readline().split('\x00')[0]
+	f.close()
+	f = open('status', 'r')
+	process_dict[i]['SWAP'] = re.findall('VmSwap:\s+(\d+)', f.read())[0]
+	f.close()
+	f = open('smaps', 'r')
+	process_dict[i]['PSS'] = repr(sum([int(x) for x in re.findall('^Pss:\s+(\d+)', fp.read(), re.M)]))
+	f.close()
+	
+	os.chdir('/proc')
