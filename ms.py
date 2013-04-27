@@ -25,3 +25,21 @@ for key, value in sys_stats:
     print (key + ":").ljust(12), (value + ' kB').ljust(0)
 
 print '--'
+
+running_dir = os.getcwd()
+
+os.chdir('/proc')
+
+list_of_pids = glob.glob('[0-9]*')
+
+process_dict = {}
+
+process_dict['0'] = {}
+process_dict['0']['PID'] = 'PID'
+process_dict['0']['USS'] = 'USS'
+process_dict['0']['PSS'] = 'PSS'
+process_dict['0']['SWAP'] = 'SWAP'
+process_dict['0']['RES'] = 'RES'
+process_dict['0']['SHR'] = 'SHR'
+process_dict['0']['CMD'] = 'CMD'
+
