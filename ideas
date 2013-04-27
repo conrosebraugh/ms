@@ -28,6 +28,7 @@ def pss_of_process(pid):
     *swap can be found in status under VmSwap(total swap in kB)
 7. (CMD)
     a. /proc/PID/cmdline maybe. Not sure if we need to parse out args to the command
+    *could use /status 'Name:'
 
 
 Notes:
