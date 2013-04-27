@@ -8,14 +8,24 @@
         i. subtract nmber of shared pages (statm[2]) from rss (statm[1]) 
 4. (SHR)
     a. probably statm[2]. not entirely sure
+    *it is statm[2]
 5. (PSS)
     a. CAN NOT BE DONE WITH STATM
     b. will be very slow
     c. dictionary of pages
         i. key is page number
         ii. value is list of processes page
+
+import sys, re
+
+def pss_of_process(pid):
+    with file('/proc/%s/smaps' % pid) as fp:
+        return sum([int(x) for x in re.findall('^Pss:\s+(\d+)', fp.read(), re.M)])
+        
+        
 6. (SWAP)
     a. CAN NOT BE DONE WITH STATM
+    *swap can be found in status under VmSwap(total swap in kB)
 7. (CMD)
     a. /proc/PID/cmdline maybe. Not sure if we need to parse out args to the command
 
