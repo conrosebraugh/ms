@@ -32,41 +32,58 @@ os.chdir('/proc')
 
 list_of_pids = glob.glob('[0-9]*')
 
-process_dict = {}
+pd = {}
 
-process_dict['0'] = {}
-process_dict['0']['PID'] = 'PID'
-process_dict['0']['USS'] = 'USS'
-process_dict['0']['PSS'] = 'PSS'
-process_dict['0']['SWAP'] = 'SWAP'
-process_dict['0']['RES'] = 'RES'
-process_dict['0']['SHR'] = 'SHR'
-process_dict['0']['CMD'] = 'CMD'
+pd['0'] = {}
+pd['0']['PID'] = 'PID'
+pd['0']['USS'] = 'USS'
+pd['0']['PSS'] = 'PSS'
+pd['0']['SWAP'] = 'SWAP'
+pd['0']['RES'] = 'RES'
+pd['0']['SHR'] = 'SHR'
+pd['0']['CMD'] = 'CMD'
 
 print list_of_pids
 
 for i in list_of_pids:
-    process_dict[i] = {}
-    process_dict[i]['PID'] = i
     os.chdir('/proc/'+i)
     f = open('status', 'r')
     try:
-        process_dict[i]['SWAP'] = re.findall('VmSwap:\s+(\d+)', f.read())[0]
+        temp = re.findall('VmSwap:\s+(\d+)', f.read())[0]
+        pd[i] = {}
+        pd[i]['PID'] = i
+        pd[i]['SWAP'] = temp
     except IndexError:
         continue
-    print i
+    # print i
     f.close()
     f = open('statm', 'r')
     l = f.readline().split()
-    process_dict[i]['RES'] = l[1]
-    process_dict[i]['USS'] = repr(int(l[2]) - int(l[1]))
-    process_dict[i]['SHR'] = l[2]
+    pd[i]['RES'] = l[1]
+    pd[i]['USS'] = repr(int(l[1]) - int(l[2]))
+    pd[i]['SHR'] = l[2]
     f.close()
     f = open('cmdline', 'r')
-    process_dict[i]['CMD'] = f.readline().split('\x00')[0]
+    pd[i]['CMD'] = f.readline().split('\x00')[0]
     f.close()
     f = open('smaps', 'r')
-    process_dict[i]['PSS'] = repr(sum([int(x) for x in re.findall('^Pss:\s+(\d+)', f.read(), re.M)]))
+    pd[i]['PSS'] = repr(sum([int(x) for x in re.findall('^Pss:\s+(\d+)', f.read(), re.M)]))
     f.close()
     
     os.chdir('/proc')
+
+print " "
+
+#    print (key + ":").ljust(12), (value + ' kB').ljust(0)
+
+print (pd['0']['PID']).ljust(8), (pd['0']['USS']).ljust(8), (pd['0']['PSS']).ljust(8),
+print (pd['0']['SWAP']).ljust(8), (pd['0']['RES']).ljust(8), (pd['0']['SHR']).ljust(8), 
+print (pd['0']['CMD']).ljust(8) 
+
+for i in pd:
+    if i == '0':
+        continue
+    print (pd[i]['PID']).ljust(8), (pd[i]['USS']).ljust(8), (pd[i]['PSS']).ljust(8),
+    print (pd[i]['SWAP']).ljust(8), (pd[i]['RES']).ljust(8), (pd[i]['SHR']).ljust(8), 
+    print (pd[i]['CMD']).ljust(8) 
+
