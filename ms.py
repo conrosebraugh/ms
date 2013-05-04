@@ -49,15 +49,17 @@ pd['0']['CMD'] = 'CMD'
 
 for i in list_of_pids:
     os.chdir('/proc/'+i)
-    f = open('status', 'r')
-    try:
-        temp = re.findall('VmSwap:\s+(\d+)', f.read())[0]
-        pd[i] = {}
-        pd[i]['PID'] = int(i)
-        pd[i]['SWAP'] = int(temp)
-    except IndexError:
+    f = open('smaps', 'r')
+    if f.read() == '':
         continue
+    pd[i] = {}
+    pd[i]['PID'] = int(i)
+    f.seek(0)
+    pd[i]['PSS'] = sum([int(x) for x in re.findall('^Pss:\s+(\d+)', f.read(), re.M)])
+    f.seek(0)
+    pd[i]['SWAP'] = sum([int(x) for x in re.findall('^Swap:\s+(\d+)', f.read(), re.M)])
     f.close()
+ 
     f = open('statm', 'r')
     l = f.readline().split()
     pd[i]['RES'] = int(l[1])
@@ -66,9 +68,6 @@ for i in list_of_pids:
     f.close()
     f = open('cmdline', 'r')
     pd[i]['CMD'] = re.split('(\x00|\s+)', f.readline())[0]
-    f.close()
-    f = open('smaps', 'r')
-    pd[i]['PSS'] = sum([int(x) for x in re.findall('^Pss:\s+(\d+)', f.read(), re.M)])
     f.close()
     
     os.chdir('/proc')
