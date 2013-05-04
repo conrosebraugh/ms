@@ -1,9 +1,13 @@
 #!/usr/bin/python
 
+import sys
 import os
 import glob
 import re
 from pprint import pprint
+import getopt
+
+opts, args = getopt.getopt(sys.argv[1:], 's:', ['sort='])
 
 def find_sys_stats():
     f = open('/proc/meminfo','r')
@@ -43,15 +47,6 @@ pd['0']['RES'] = 'RES'
 pd['0']['SHR'] = 'SHR'
 pd['0']['CMD'] = 'CMD'
 
-#
-#
-#
-#
-#
-#
-#
-#
-
 for i in list_of_pids:
     os.chdir('/proc/'+i)
     f = open('status', 'r')
@@ -62,7 +57,6 @@ for i in list_of_pids:
         pd[i]['SWAP'] = int(temp)
     except IndexError:
         continue
-    # print i
     f.close()
     f = open('statm', 'r')
     l = f.readline().split()
@@ -71,7 +65,6 @@ for i in list_of_pids:
     pd[i]['SHR'] = int(l[2])
     f.close()
     f = open('cmdline', 'r')
-    # pd[i]['CMD'] = f.readline().split('\x00')[0]
     pd[i]['CMD'] = re.split('(\x00|\s+)', f.readline())[0]
     f.close()
     f = open('smaps', 'r')
@@ -82,28 +75,66 @@ for i in list_of_pids:
 
 print " "
 
-ordered = sorted(pd.items(), key=lambda x: x[1]['RES'], reverse=True)
+rev = True
+col = ''
+
+for opt, arg in opts:
+    if opt == '--sort':
+        if arg[:len(arg)-1].upper() == "PID":
+            col = 'PID'
+            if arg[len(arg)-1] == '-':
+                rev = True
+            else:
+                rev = False
+        if arg[:len(arg)-1].upper() == "USS":
+            col = 'USS'
+            if arg[len(arg)-1] == '-':
+                rev = True
+            else:
+                rev = False
+        if arg[:len(arg)-1].upper() == "PSS":
+            col = 'PSS'
+            if arg[len(arg)-1] == '-':
+                rev = True
+            else:
+                rev = False
+        if arg[:len(arg)-1].upper() == "SWAP":
+            col = 'SWAP'
+            if arg[len(arg)-1] == '-':
+                rev = True
+            else:
+                rev = False
+        if arg[:len(arg)-1].upper() == "RES":
+            col = 'RES'
+            if arg[len(arg)-1] == '-':
+                rev = True
+            else:
+                rev = False
+        if arg[:len(arg)-1].upper() == "SHR":
+            col = 'SHR'
+            if arg[len(arg)-1] == '-':
+                rev = True
+            else:
+                rev = False
+        if arg[:len(arg)-1].upper() == "CMD":
+            col = 'CMD'
+            if arg[len(arg)-1] == '-':
+                rev = True
+            else:
+                rev = False
+
+if col != "":
+    ordered = sorted(pd.items(), key=lambda x: x[1][col], reverse=rev)
+else:
+    ordered = sorted(pd.items(), key=lambda x: x[1]['PID'], reverse=False)
 
 print (pd['0']['PID']).ljust(8), (pd['0']['USS']).ljust(8), (pd['0']['PSS']).ljust(8),
 print (pd['0']['SWAP']).ljust(8), (pd['0']['RES']).ljust(8), (pd['0']['SHR']).ljust(8), 
 print (pd['0']['CMD']).ljust(8) 
-
-# for i in pd:
-#     if i == '0':
-#         continue
-#     print (repr(pd[i]['PID'])).ljust(8), (repr(pd[i]['USS'])).ljust(8), (repr(pd[i]['PSS'])).ljust(8),
-#     print (repr(pd[i]['SWAP'])).ljust(8), (repr(pd[i]['RES'])).ljust(8), (repr(pd[i]['SHR'])).ljust(8), 
-#     print (pd[i]['CMD']).ljust(8) 
-
 
 for i in ordered:
     if i[1]['PID'] == 'PID':
         continue
     print (repr(i[1]['PID'])).ljust(8), (repr(i[1]['USS'])).ljust(8), (repr(i[1]['PSS'])).ljust(8),
     print (repr(i[1]['SWAP'])).ljust(8), (repr(i[1]['RES'])).ljust(8), (repr(i[1]['SHR'])).ljust(8), 
-    print (i[1]['CMD']).ljust(8) 
-
-#items = ((pid, uss, pss, swap, res, shr, cmd) for pid in pd for blah, val in pd[pid].items())
-
-
-#pprint(ordered)
+    print (i[1]['CMD']).ljust(8)
